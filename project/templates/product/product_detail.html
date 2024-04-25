@@ -1,0 +1,126 @@
+<style>  
+    .threebtns{
+        text-decoration: none;
+        border: 1px solid grey;
+        border-radius: 5px;
+        color: white;
+        padding: 10px 30px;
+       
+        background-color: green;
+        font-weight: bold;
+        font-family: Arial, Helvetica, sans-serif;
+        
+    }
+</style>
+{% extends "base.html" %}
+{% load product_tags %}
+{% block content %}
+ <!-- breadcrumb__area-start -->
+
+<!-- breadcrumb__area-end -->
+
+<!-- product-details-start -->
+<div class="product-details">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="product__details-nav d-sm-flex align-items-start">
+                    <div class="product__details-thumb">
+                       {% comment %} {% for i in product %} {% endcomment %}
+                        <div class="tab-content" id="productThumbContent">
+                            <div class="tab-pane fade show active" id="thumbOne" role="tabpanel" aria-labelledby="thumbOne-tab">
+                                <div class="product__details-nav-thumb w-img">
+                                    <img src="{{product.image.url}}" alt="" height="500px" width="550px">
+                                </div>
+                            </div>
+                          </div>
+                           
+                    </div>
+                    
+                </div>
+                
+                <tr>
+                
+                {% comment %} {% endfor %}  {% endcomment %}
+            </div>
+            <div class="col-xl-6">
+                <div class="product__details-content">
+                    {% comment %} {% for i in product  %} {% endcomment %}
+                    <h3 class="mb-2" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">{{product.name}}</h3>
+                    {% comment %} <div class="pd-rating mb-10">
+                        <span><a href="#">Add your review</a></span>
+                    </div> {% endcomment %}
+                    <div class="price mb-10">
+                        <h4 class="card-text mt-3"><span class="me-2 text-danger" >Price: ₹{% cal_sellprice product.price product.discount%} <small>only</small></span><del>₹{{product.price}}</del></h4>
+                    </div>
+                    
+                    <div class="product-stock mb-2">
+                        <h6>Availability: <span> <span class="text-danger">only {{product.available_quantity}}</span> pieces left</span></h6>
+                    </div>
+                    
+                    
+                            
+                            <div class="container mt-4 mb-4">
+                                <div class="row">
+                                    <div class="col-md-4" >
+                                 <a href="{% url "cart_add" product.id %}" class="threebtns" >Add To Cart</a></div>
+                                 <div class="col-md-4" >
+                                 <a href="{% url "add_to_wishlist" product.id %}" class="threebtns" >To Wishlist</a></div>
+                                 {% comment %} <div class="col-md-4" >
+                                 <a href="#" class="threebtns" >Share</a></div>
+                                </div> {% endcomment %}
+                            </div>
+                    <div class="product-tag-area mt-15">
+                        <div class="product_info">
+                            <span class="posted_in">
+                                <p class="fs-3" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;"><small>Brand:</small>{{product.brand}}</p>
+                                <span class="title">Categories:</span>
+                                <a href="#">{{product.category}}</a>
+                                
+                            </span>
+                            <span class="tagged_as">
+                                <span class="title">Tags:</span>
+                                <a href="#">{{product.subcategory}}</a>, 
+                                
+                            </span>
+                        </div>
+                    </div>
+                    
+                        <h1>Description</h1>
+                        <p>{{product.description}}</p>
+                        <h3>Product Details</h3><tr>
+                        <p>{{product.product_details|safe}}</p>
+                    
+                    {% comment %} {% endfor %} {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- product-details-end -->
+
+<h2 class="text-center mt-5 head" style="font-family:Georgia, 'Times New Roman', Times, serif; color:red">RELATED PRODUCTS</h2>
+
+<div class="row mt-4">
+{% for r in r_products %}
+<div class="col-lg-3 col-md-6 mb-4">
+    <div class="card" style="border: none;">
+     <div class="discount-bar bg-success text-white">
+       <span class="discount-text">{{r.discount}}%</span>
+     </div>
+        <a href="{% url "add_to_wishlist" r.id %}"><i class="bi bi-heart-fill" style="position: absolute; top: 10px; right: 10px; font-size: 24px;"></i></a>
+        <a href="{{r.get_absolute_url}}">
+        <img src="{{r.image.url}}" class="card-img-top" alt="Product Image">
+        </a>
+        <div class="card-body">
+            <h5 class="card-title"></h5>
+            <p class="card-text">{{r.name}}</p>
+            <p class="card-text"><span class="pricer">Price: ₹{% cal_sellprice r.price r.discount%}</span><del>₹{{r.price}}</del></p>
+            <a href="{% url 'cart_add' r.id %}" class="btn btn-primary">Add to Cart</a>
+        </div>
+    </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock  %} 

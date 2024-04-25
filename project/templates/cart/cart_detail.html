@@ -1,0 +1,219 @@
+<style>
+  /* Custom styles for the box */
+  .checkout-box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+  }
+  .list-group-item{
+    border: 1px solid #ccc;
+  }
+  .total{
+    font-size: 18px; /* Increase font size for the button */
+    font-weight: bold;
+    border-radius:8px;
+  }
+  .cart_quantity_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px; /* Adjust this value as needed */
+  }
+  
+  /* Style for the add (+) button */
+  .cart_quantity_up,
+  .cart_quantity_down {
+    display: inline-block;
+    width: 30px; /* Adjust width as needed */
+    height: 30px; /* Adjust height as needed */
+    text-align: center;
+    line-height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cart_quantity_up:hover,
+  .cart_quantity_down:hover {
+    background-color: #b7b6b6; /* Change hover background color as desired */
+  }
+  
+  /* Adjust margin between buttons and input if needed */
+  .cart_quantity_input {
+    margin: 0 10px; /* Adjust margin as needed */
+    padding: 5px; /* Adjust padding as needed */
+    /* Add any additional styles for the input field here */
+  }
+</style>
+{% extends "base.html" %}
+{% load cart_tag %}
+{% block content %}
+<section id="cart_items">
+    <div class="container">
+        
+        <div class="table-responsive cart_info">
+            <table class="table table-condensed">
+                <thead>
+                    <tr class="cart_menu">
+                        <td class="image">Item</td>
+                        <td class="description">Name</td>
+                        <td class="price">Price</td>
+                        <td class="quantity">Quantity</td>
+                        <td class="total">Total</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in product_details %}
+                    <tr>
+                        <td class="cart_product">
+                            <a href="" ><img src="{{ product.product.image.url }}" alt="" width="100px" height="100px"></a>
+                        </td>
+                        
+                        <td class="cart_name">
+                            <a href="{{product.product.get_absolute_url}}" style="color:black" style="text-decoration: none;"><h6>{{product.product.name}}</h6></a>
+                        </td>
+                      
+                        <td class="cart_price">
+                          <p>Price: ₹{{product.discounted_price}}</p>
+                        </td>
+                        <td class="cart_quantity">
+                            <div class="cart_quantity_button">
+                                <a class="cart_quantity_up me-2" href="{% url 'item_increment'  product.product.id  %}"> + </a>
+                                <input class="cart_quantity_input" type="text" name="quantity" value=" {{product.quantity}} " autocomplete="off" size="2">
+                                <a class="cart_quantity_down ms-2" href="{% url 'item_decrement' product.product.id %}"> - </a>
+                            </div>
+                        </td>
+                        <td class="cart_total">
+                          <p class="cart_total_price">₹{{ product.subtotal }} </p>
+
+                        <td class="cart_delete">
+                            <a class="cart_quantity_delete" href="{% url 'item_clear' product.product.id%}"><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <td>
+                    </td>
+                    <td> 
+                    </td>
+                    <td>
+                        <h5>Sub Total:</h5>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        <h5>₹ {{ total }}</h5>
+                         
+                    </td>
+                </tfoot>
+            </table>
+          </div>
+    </div>
+</section> <!--/#cart_items-->
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 offset-md-8">
+  <div class="checkout-box" style="margin-left: 0;">
+    <h4>Total Amount</h4>
+    <ul class="list-group">
+      <li class="list-group-item">Subtotal:<span style="float: right;">{{ total }}</span></li>
+      {% if total > 2999 %}
+      <li class="list-group-item">Shipping Charge:<span style="float: right;">Free</span></li>
+      <li class="list-group-item mt-2 total" style="border:1px solid black;" >Total:<span style="float: right;">{{ lastprice }}</span></li>
+      {%elif total == 0 %}
+      <li class="list-group-item">Shipping Charge:<span style="float: right;">0</span></li>
+      <li class="list-group-item mt-2 total" style="border:1px solid black;" >Total:<span style="float: right;">{{total}}</span></li>
+      {% else %}
+      <li class="list-group-item">Shipping Charge:<span style="float: right;">120</span></li>
+      <li class="list-group-item mt-2 total" style="border:1px solid black;" >Total:<span style="float: right;">{{lastprice}}</span></li>
+      {% endif %}
+      
+    </ul>
+    <button style="width:100%;" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Checkout</button>
+  </div>
+</div>
+</div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="razorpayForm" method="POST" action="{% url 'checkout' %}">
+            {% csrf_token %}
+          <div class="mb-3">
+            <input type="hidden" name="lastprice" value="{{ lastprice }}">
+
+            <input type="text" value="{{order_id}}" name="order_id" hidden/>
+            <input type="text" value="{{payment}}" name="payment" hidden/>
+            <label for="recipient-name" class="col-form-label">Phone:</label>
+            <input type="text" name="phone" class="form-control" id="recipient-name">
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">Address:</label>
+            <textarea class="form-control" name="address" id="message-text"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">pincode:</label>
+            <input type="text" name="pincode" class="form-control" id="recipient-name">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" >Checkout</button>
+            
+            
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ {% comment %} <form action="/success/" method="POST"> 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "rzp_test_sCaH0EMATBIVvT", // Enter the Key ID generated from the Dashboard
+    "amount": "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "playmaker", //your business name
+    "description": "PURCHASE",
+    "image": "https://example.com/your_logo",
+    "order_id": "{{order_id}}", 
+    "callback_url": "http://127.0.0.1:8000/success",
+   
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+
+</script>
+</form>   {% endcomment %}
+
+{% endblock  %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container text-center">
+    <img src="{% static "/images/tik1.png" %}" alt="" height="300px">
+    <h3>Thankyou for ordering in our store</h3>
+    <a href="{% url "index" %}"><button class="btn btn-primary mb-5">Continue Shopping</button></a>
+</div>
+{% endblock  %}

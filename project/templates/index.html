@@ -1,0 +1,120 @@
+
+{% extends "base.html" %}
+{% load product_tags %}
+{% block title %}playmaker{% endblock title %}home page
+{% block content %}
+{% load static %}
+
+<style>
+    
+  .btn.btn-white {
+    background-color: #fff;
+    color:red;
+    border: 1px solid grey;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .btn.btn-white:hover {
+    background-color:red;
+    color: #393333;
+    transition: all 0.4s ease;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+</style>
+
+ <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+    
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-bs-interval="3000">
+        <img src="{% static "/images/1.png" %}" class="d-block w-100" alt="..." height="600px">
+        <div class="carousel-caption d-none d-md-block">
+          
+        </div>
+      </div>
+      <div class="carousel-item" data-bs-interval="3000">
+        <img src="{% static "/images/neymu2.jpg" %}"  class="d-block w-100" alt="..." height="600px">
+        <div class="carousel-caption d-none d-md-block">
+          <h1 style="font-family:Georgia, 'Times New Roman', Times, serif; color:rgb(255, 255, 255)">{{ney.name }}</h1>
+          <a style="text-decoration:none;" href="{{ney.get_absolute_url}}"><button class="btn btn-primary">SeeMore</button></a>
+          
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+  <div class="container">
+    <h1 class="text-center mt-5 head" style="font-family:Georgia, 'Times New Roman', Times, serif; color:red">TOP DEAL OF THE DAY</h1>
+   <div class="row mt-5" >
+       {% for p in products %}
+       <div class="col-lg-3 col-md-6 mb-4">
+           <div class="card" style="border: none;">
+             <div class="discount-bar bg-success text-white">
+               <span class="discount-text">{{p.discount}}%</span>
+             </div>
+             <a href="{% url "add_to_wishlist" p.id %}"><i class="bi bi-heart-fill" style="position: absolute; top: 10px; right: 10px; font-size: 24px;"></i></a>
+             <a href="{{p.get_absolute_url}}">  
+ 
+             <img src="{{p.image.url}}" class="card-img-top" alt="Product Image">
+             </a>
+               <div class="card-body">
+                   <h5 class="card-title"></h5>
+                   <p class="card-text">{{p.name}}</p>
+                   <p class="card-text"><span class="pricer">Price: ₹{% cal_sellprice p.price p.discount%}</span><del>₹{{p.price}}</del></p>
+                   <a href="{% url 'cart_add' p.id %}" class="btn btn-primary cartbtn">Add to Cart</a>
+               </div>
+           </div>
+       </div>
+       {% endfor %}
+   </div>
+ </div>
+   
+ <div class="container">
+  <div class="row">
+      <div class="col-md-12 text-center">
+          <div class="position-relative">
+              <img src="{% static '/images/inner1.jpg' %}" alt="Image Description" height="500px" width="100%" style="opacity: 0.9;">
+              <h1></h1>
+              <a href="{% url "categories" %}" class="btn btn-white  position-absolute top-50 translate-middle indbut" style="right: 50;font-size: large;">CHECKOUT NOW</a>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="container mt-4">
+  <h1 class="text-center head" style="font-family: Georgia, 'Times New Roman', Times, serif; color:red">RECOMENDED FOR YOU</h1>
+ <div class="row mt-4">
+     {% for r in recomended %}
+     <div class="col-lg-3 col-md-6 mb-4">
+         <div class="card" style="border: none;">
+          <div class="discount-bar bg-success text-white">
+            <span class="discount-text">{{r.discount}}%</span>
+          </div>
+             <a href="{% url "add_to_wishlist" r.id %}"><i class="bi bi-heart-fill" style="position: absolute; top: 10px; right: 10px; font-size: 24px;"></i></a>
+             <a href="{{r.get_absolute_url}}">
+             <img src="{{r.image.url}}" class="card-img-top" alt="Product Image">
+             </a>
+             <div class="card-body">
+                 <h5 class="card-title"></h5>
+                 <p class="card-text">{{r.name}}</p>
+                 <p class="card-text"><span class="pricer">Price: ₹{% cal_sellprice r.price r.discount%}</span><del>₹{{r.price}}</del></p>
+                 <a href="{% url 'cart_add' r.id %}" class="btn btn-primary cartbtn">Add to Cart</a>
+             </div>
+         </div>
+     </div>
+     {% endfor %}
+ </div>
+</div>
+{% endblock  %} 
